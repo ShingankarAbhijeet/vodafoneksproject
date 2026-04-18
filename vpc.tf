@@ -14,4 +14,5 @@ resource "aws_subnet" "test_subnet_1" {
     Name = "Private-subnet-${count.index + 1}"
   }
 }
+https://awscli.amazonaws.com/AWSCLIV2.msi
 */
