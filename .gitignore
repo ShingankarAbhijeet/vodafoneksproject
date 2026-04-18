@@ -1,0 +1,56 @@
+.terraform
+'Project - End-to-End Kubernetes Implementation.docx'
+'~$oject - End-to-End Kubernetes Implementation.docx'
+ubuntu-vm.pem
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tf
+.terraform.lock.hcl
+.gitignore
+
+
+# State files — never commit these
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# tfvars — contains secrets
+*.tfvars
+*.tfvars.json
+
+# Terraform working directory
+.terraform/
+.terraform.lock.hcl
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Credentials and keys
+*.pem
+*.key
+*.p12
+*.pfx
+.aws/
+.oci/
+
+# Environment files
+.env
+.env.*
+*.env
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
