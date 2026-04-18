@@ -1,8 +1,0 @@
-.terraform
-'Project - End-to-End Kubernetes Implementation.docx'
-'~$oject - End-to-End Kubernetes Implementation.docx'
-ubuntu-vm.pem
-terraform.tfstate
-terraform.tf
-.terraform.lock.hcl
-.gitignore
