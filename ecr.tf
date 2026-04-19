@@ -10,7 +10,7 @@ resource "aws_ecr_repository" "example-registry" {
 }
 
 resource "aws_ecr_lifecycle_policy" "example" {
-  repository = aws_ecr_repository.example_registry.name
+  repository = aws_ecr_repository.example-registry.name
 
   policy = jsonencode({
     rules = [
