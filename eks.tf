@@ -1,5 +1,5 @@
 # ─── Data Sources: Default VPC & Subnets ───────────────────────────────────────
-
+/*
 data "aws_vpc" "default" {
   default = true
 }
@@ -122,3 +122,4 @@ resource "aws_eks_node_group" "example" {
     aws_iam_role_policy_attachment.node_AmazonEC2ContainerRegistryReadOnly,
   ]
 }
+*/
