@@ -4,7 +4,7 @@
 ubuntu-vm.pem
 terraform.tfstate
 terraform.tfstate.backup
-terraform.tf
+
 .terraform.lock.hcl
 .gitignore
 
