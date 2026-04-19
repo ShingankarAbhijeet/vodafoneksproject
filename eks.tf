@@ -48,7 +48,7 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
 resource "aws_eks_cluster" "example" {
   name     = "example"
   role_arn = aws_iam_role.cluster.arn
-  version  = "1.33"
+  version  = "1.3"
 
   access_config {
     authentication_mode = "API"
