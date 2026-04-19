@@ -1,4 +1,4 @@
-resource "aws_ecr_repository" "exampl-registry" {
+resource "aws_ecr_repository" "example-registry" {
   name = "myapp-dev"
   image_tag_mutability = "IMMUTABLE"
   image_scanning_configuration {
