@@ -7,7 +7,7 @@ terraform.tfstate.backup
 terraform.tf
 .terraform.lock.hcl
 .gitignore
-.github/
+
 
 
 # State files — never commit these
