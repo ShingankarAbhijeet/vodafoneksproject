@@ -122,3 +122,22 @@ resource "aws_eks_node_group" "example" {
     aws_iam_role_policy_attachment.node_AmazonEC2ContainerRegistryReadOnly,
   ]
 }
+
+
+##############################accessing eks cluster###########################
+resource "aws_eks_access_entry" "abz" {
+  cluster_name  = aws_eks_cluster.example.name
+  principal_arn = "arn:aws:iam::314133462348:user/abz"
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "abz_admin" {
+  cluster_name  = aws_eks_cluster.example.name
+  principal_arn = aws_eks_access_entry.abz.principal_arn
+
+  policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+}
