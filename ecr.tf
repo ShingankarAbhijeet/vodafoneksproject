@@ -1,4 +1,4 @@
-resource "aws_ecr_repository" "example-registry" {
+resource "aws_ecr_repository" "example_registry" {
   for_each = toset(var.env)
   name = "${var.Project}/${each.value}"
   image_tag_mutability = "IMMUTABLE"
@@ -11,7 +11,7 @@ resource "aws_ecr_repository" "example-registry" {
 }
 
 resource "aws_ecr_lifecycle_policy" "example" {
-  for_each = aws_ecr_repository.example-registry
+  for_each = aws_ecr_repository.example_registry
   repository = each.value.name
 
   policy = jsonencode({
