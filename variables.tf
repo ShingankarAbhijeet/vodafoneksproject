@@ -10,5 +10,5 @@ variable "env" {
 }
 variable "Project" {
   type = string
-  default = "WCPG"
+  default = "worldclassprodgrade"
 }
