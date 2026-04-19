@@ -1,5 +1,6 @@
 resource "aws_ecr_repository" "example-registry" {
-  name = "myapp-dev"
+  for_each = toset(var.env)
+  name = "${var.Project}/${each.value}"
   image_tag_mutability = "IMMUTABLE"
   image_scanning_configuration {
     scan_on_push = true
@@ -10,7 +11,8 @@ resource "aws_ecr_repository" "example-registry" {
 }
 
 resource "aws_ecr_lifecycle_policy" "example" {
-  repository = aws_ecr_repository.example-registry.name
+  for_each = aws_ecr_repository.example-registry
+  repository = each.value.name
 
   policy = jsonencode({
     rules = [
