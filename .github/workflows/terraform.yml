@@ -1,23 +1,30 @@
 name: Terraform CI/CD
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - abz
 
 jobs:
   plan:
+    environment: dev
     runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{secrets.AWS_REGION}}
+          role-to-assume: arn:aws:iam::314133462348:role/github-actions-prod
+          aws-region: us-east-1
+          role-duration-seconds: 900
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
@@ -37,7 +44,12 @@ jobs:
   apply:
     needs: plan
     runs-on: ubuntu-latest
-    environment: dev
+    environment: dev   # 👈 IMPORTANT
+
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,12 +59,12 @@ jobs:
         with:
           name: tfplan
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{secrets.AWS_REGION}}
+          role-to-assume: arn:aws:iam::314133462348:role/github-actions-prod
+          aws-region: us-east-1
+          role-duration-seconds: 900
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
