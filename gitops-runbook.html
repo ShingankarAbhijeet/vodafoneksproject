@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GitOps Runbook — WCPG Setup</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#F4F6FA;
+  color:#1A2235;
+  font-family:'JetBrains Mono',monospace;
+  padding:48px 40px 64px;
+}
+.page{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+
+/* HEADER */
+.header{
+  background:#080F1C;
+  border-radius:14px;
+  padding:40px 40px 36px;
+  position:relative;
+  overflow:hidden;
+}
+.header::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,#6C5FE8,#3A8FE8,#3ECBB4,#50D476,#F0A020,#E86060);
+}
+.header::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(60,120,220,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(60,120,220,0.04) 1px,transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+}
+.header-inner{position:relative;z-index:1}
+.header h1{
+  font-family:'Syne',sans-serif;
+  font-size:28px;font-weight:800;
+  letter-spacing:3px;text-transform:uppercase;
+  color:#E8F2FF;margin-bottom:6px;
+}
+.header p{font-size:11px;color:rgba(232,242,255,0.4);letter-spacing:2px;text-transform:uppercase}
+.status{
+  margin-top:22px;
+  padding:14px 18px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:8px;
+  display:flex;gap:24px;flex-wrap:wrap;
+}
+.s-item{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(232,242,255,0.7)}
+.s-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.s-dot.done{background:#50D476}
+.s-dot.next{background:#F0A020}
+
+/* PHASE */
+.phase{background:#fff;border-radius:12px;border:1px solid #E2E8F0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.phase-header{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 22px;
+  border-bottom:1px solid #E2E8F0;
+  background:#fff;
+}
+.ph-bar{width:4px;height:36px;border-radius:3px;flex-shrink:0;background:var(--c)}
+.ph-meta{display:flex;flex-direction:column;gap:3px}
+.ph-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--c);font-weight:500}
+.ph-title{
+  font-family:'Syne',sans-serif;
+  font-size:16px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  color:#1A2235;
+}
+.ph-badge{
+  margin-left:auto;
+  padding:3px 10px;border-radius:3px;
+  font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;
+  background:var(--cb);color:var(--c);
+  white-space:nowrap;
+}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column}
+.step{
+  display:flex;gap:0;
+  border-bottom:1px solid #EEF1F7;
+  transition:background .15s;
+}
+.step:last-child{border-bottom:none}
+.step:hover{background:#FAFBFF}
+
+.step-num{
+  min-width:52px;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:16px 0 16px;
+}
+.sn{
+  width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  background:var(--cb);color:var(--c);
+  flex-shrink:0;
+  margin-top:1px;
+}
+
+.step-content{flex:1;padding:15px 22px 15px 4px}
+.step-title{
+  font-family:'Syne',sans-serif;
+  font-size:13px;font-weight:700;
+  letter-spacing:0.5px;
+  color:#1A2235;margin-bottom:5px;
+}
+.step-desc{font-size:10.5px;color:#5A6A85;line-height:1.65}
+.step-tools{
+  display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;
+}
+.tool{
+  padding:2px 8px;border-radius:3px;
+  font-size:9.5px;font-weight:500;letter-spacing:0.3px;
+  background:#F0F3FA;color:#4A5A78;
+  border:1px solid #E2E8F0;
+}
+.tool.key{background:var(--cb);color:var(--c);border-color:transparent}
+
+.step-check{
+  min-width:32px;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:18px 12px 0 0;
+}
+.chk{
+  width:16px;height:16px;border-radius:4px;
+  border:1.5px solid #D0D8E8;
+  background:#fff;flex-shrink:0;
+}
+
+/* CURRENT STATE BOX */
+.current{
+  background:#fff;border-radius:12px;
+  border:2px solid #50D476;
+  padding:20px 24px;
+  display:flex;align-items:center;gap:16px;
+}
+.cur-icon{
+  width:40px;height:40px;border-radius:50%;
+  background:#EBF9EF;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:18px;
+}
+.cur-meta{flex:1}
+.cur-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#50D476;margin-bottom:4px;font-weight:500}
+.cur-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#1A2235;margin-bottom:6px}
+.cur-chips{display:flex;flex-wrap:wrap;gap:5px}
+.cur-chip{
+  padding:2px 8px;border-radius:3px;font-size:9.5px;
+  background:#EBF9EF;color:#27804A;border:1px solid #B8EACB;font-weight:500;
+}
+
+/* FOOTER */
+.footer{
+  text-align:center;font-size:9px;
+  color:#A0AABF;letter-spacing:2px;text-transform:uppercase;
+  padding-top:8px;
+}
+
+@media print{
+  body{background:#fff;padding:20px}
+  .step:hover{background:transparent}
+  .phase{box-shadow:none}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <h1>GitOps Runbook</h1>
+    <p>World-Class Prod-Grade Setup — AWS EKS · Step-by-Step Overview</p>
+    <div class="status">
+      <div class="s-item"><span class="s-dot done"></span>GitHub repo — code pushed, workflows triggering</div>
+      <div class="s-item"><span class="s-dot done"></span>Terraform — EKS cluster provisioned</div>
+      <div class="s-item"><span class="s-dot done"></span>Remote backend — S3 + DynamoDB lock</div>
+      <div class="s-item"><span class="s-dot done"></span>Infra workflow — plan + manual approve + apply</div>
+      <div class="s-item"><span class="s-dot next"></span>Next → OIDC federation (Step 1)</div>
+    </div>
+  </div>
+</div>
+
+<!-- CURRENT STATE -->
+<div class="current">
+  <div class="cur-icon">✅</div>
+  <div class="cur-meta">
+    <div class="cur-label">You are here</div>
+    <div class="cur-title">Infra base is ready. GitOps loop not yet started.</div>
+    <div class="cur-chips">
+      <span class="cur-chip">1 EKS Cluster</span>
+      <span class="cur-chip">GitHub Actions (infra only)</span>
+      <span class="cur-chip">Terraform + Terragrunt</span>
+      <span class="cur-chip">S3 + DynamoDB backend</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PHASE 1 — FOUNDATION -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="phase" style="--c:#6C5FE8;--cb:#EEEDFE">
+  <div class="phase-header">
+    <div class="ph-bar"></div>
+    <div class="ph-meta">
+      <div class="ph-label">Phase 1</div>
+      <div class="ph-title">Foundation</div>
+    </div>
+    <div class="ph-badge">Steps 1 – 4</div>
+  </div>
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num"><div class="sn">1</div></div>
+      <div class="step-content">
+        <div class="step-title">OIDC Federation — Replace Static AWS Keys</div>
+        <div class="step-desc">Set up OpenID Connect trust between GitHub Actions and AWS. GitHub gets short-lived tokens per workflow run. Delete all static AWS keys from GitHub Secrets once done.</div>
+        <div class="step-tools">
+          <span class="tool key">OIDC Trust Policy</span>
+          <span class="tool key">IAM Role (GitHub OIDC)</span>
+          <span class="tool">Terraform</span>
+          <span class="tool">GitHub Secrets</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">2</div></div>
+      <div class="step-content">
+        <div class="step-title">ECR — Container Registry Setup</div>
+        <div class="step-desc">Create ECR repos via Terraform — one per environment. Enable image immutability and tag scanning. Also configure ECR as an OCI registry to store Helm charts.</div>
+        <div class="step-tools">
+          <span class="tool key">AWS ECR</span>
+          <span class="tool key">Immutable Tags</span>
+          <span class="tool">OCI Helm Storage</span>
+          <span class="tool">Terraform</span>
+          <span class="tool">ECR Scanning</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">3</div></div>
+      <div class="step-content">
+        <div class="step-title">Dockerfile — Containerise the App</div>
+        <div class="step-desc">Write a multi-stage Dockerfile. Build stage compiles the app, final stage uses a distroless or slim base image. No dev dependencies, no secrets baked in, minimal attack surface.</div>
+        <div class="step-tools">
+          <span class="tool key">Multi-Stage Build</span>
+          <span class="tool key">Distroless Base</span>
+          <span class="tool">BuildKit</span>
+          <span class="tool">.dockerignore</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">4</div></div>
+      <div class="step-content">
+        <div class="step-title">CI Workflow — Build, Scan, Sign, Push</div>
+        <div class="step-desc">Create ci.yml triggering on push and PR. Pipeline: lint → unit tests → SonarCloud quality gate → Docker build → Trivy scan (fail on CRITICAL) → Gitleaks secret scan → Cosign image signing → push to ECR tagged with git SHA.</div>
+        <div class="step-tools">
+          <span class="tool key">SonarCloud</span>
+          <span class="tool key">Trivy</span>
+          <span class="tool key">Cosign</span>
+          <span class="tool">Gitleaks</span>
+          <span class="tool">Syft SBOM</span>
+          <span class="tool">GitHub Actions</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PHASE 2 — GitOps CORE -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="phase" style="--c:#F0A020;--cb:#FEF3DC">
+  <div class="phase-header">
+    <div class="ph-bar"></div>
+    <div class="ph-meta">
+      <div class="ph-label">Phase 2</div>
+      <div class="ph-title">GitOps Core</div>
+    </div>
+    <div class="ph-badge">Steps 5 – 8</div>
+  </div>
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num"><div class="sn">5</div></div>
+      <div class="step-content">
+        <div class="step-title">Helm Chart — Package the Application</div>
+        <div class="step-desc">Create a Helm chart for your service inside the app repo. One base values.yaml and separate override files per environment (dev, qa, staging, prod). Push the chart to ECR OCI registry.</div>
+        <div class="step-tools">
+          <span class="tool key">Helm Chart</span>
+          <span class="tool key">values-dev/qa/staging/prod.yaml</span>
+          <span class="tool">ECR OCI</span>
+          <span class="tool">Chart versioning</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">6</div></div>
+      <div class="step-content">
+        <div class="step-title">Namespace Structure — Env Isolation on Cluster</div>
+        <div class="step-desc">Create dev, qa and staging namespaces on the existing cluster via Terraform. Prod gets its own separate cluster later. Set resource quotas and default limits per namespace.</div>
+        <div class="step-tools">
+          <span class="tool key">Namespaces: dev / qa / staging</span>
+          <span class="tool">ResourceQuota</span>
+          <span class="tool">LimitRange</span>
+          <span class="tool">Terraform</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">7</div></div>
+      <div class="step-content">
+        <div class="step-title">ArgoCD — Install and Wire the GitOps Loop</div>
+        <div class="step-desc">Install ArgoCD via Helm (managed by Terraform). Set up App-of-Apps pattern — one root app per cluster that generates child apps per service/env. Configure GitHub OAuth SSO. First merge to develop should auto-sync a pod running in dev namespace.</div>
+        <div class="step-tools">
+          <span class="tool key">ArgoCD</span>
+          <span class="tool key">App-of-Apps</span>
+          <span class="tool">ApplicationSet</span>
+          <span class="tool">GitHub OAuth</span>
+          <span class="tool">ArgoCD RBAC</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">8</div></div>
+      <div class="step-content">
+        <div class="step-title">ArgoCD Image Updater + CD Flow dev → qa → staging</div>
+        <div class="step-desc">ArgoCD Image Updater watches ECR and auto-commits the new image tag to the GitOps repo — no manual CD trigger needed. Set up sequential promotion: auto-deploy to dev, then QA, then staging. Slack notification posted at each stage.</div>
+        <div class="step-tools">
+          <span class="tool key">ArgoCD Image Updater</span>
+          <span class="tool key">Sync Waves</span>
+          <span class="tool">Slack notify</span>
+          <span class="tool">GitHub Actions cd.yml</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PHASE 3 — SECURITY HARDENING -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="phase" style="--c:#E06060;--cb:#FCEAEA">
+  <div class="phase-header">
+    <div class="ph-bar"></div>
+    <div class="ph-meta">
+      <div class="ph-label">Phase 3</div>
+      <div class="ph-title">Security Hardening</div>
+    </div>
+    <div class="ph-badge">Steps 9 – 13</div>
+  </div>
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num"><div class="sn">9</div></div>
+      <div class="step-content">
+        <div class="step-title">Kyverno — Admission Policies</div>
+        <div class="step-desc">Install Kyverno and enforce core policies cluster-wide: block :latest image tag, require signed images (Cosign), require resource limits, require liveness and readiness probes, enforce Pod Security Standards restricted profile, auto-generate NetworkPolicy per namespace.</div>
+        <div class="step-tools">
+          <span class="tool key">Kyverno</span>
+          <span class="tool key">ClusterPolicy</span>
+          <span class="tool">PSS Restricted</span>
+          <span class="tool">Auto NetworkPolicy</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">10</div></div>
+      <div class="step-content">
+        <div class="step-title">Calico — Default-Deny Network Policy</div>
+        <div class="step-desc">Install Calico CNI and apply a default-deny GlobalNetworkPolicy across all namespaces. Only explicitly allowed traffic flows between services. This is the baseline for zero-trust networking inside the cluster.</div>
+        <div class="step-tools">
+          <span class="tool key">Calico</span>
+          <span class="tool key">Default-Deny Policy</span>
+          <span class="tool">GlobalNetworkPolicy</span>
+          <span class="tool">Namespace isolation</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">11</div></div>
+      <div class="step-content">
+        <div class="step-title">Istio — Service Mesh + mTLS</div>
+        <div class="step-desc">Install Istio (istioctl or Helm). Enable mTLS strict mode across all namespaces — all pod-to-pod traffic is automatically encrypted. Add AuthorizationPolicy for zero-trust service auth. Configure Istio Gateway as the cluster ingress. Set up Kiali for live mesh visibility.</div>
+        <div class="step-tools">
+          <span class="tool key">Istio</span>
+          <span class="tool key">mTLS Strict</span>
+          <span class="tool key">AuthorizationPolicy</span>
+          <span class="tool">Kiali</span>
+          <span class="tool">Istio Gateway</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">12</div></div>
+      <div class="step-content">
+        <div class="step-title">Falco — Runtime Threat Detection</div>
+        <div class="step-desc">Install Falco as a DaemonSet. Enable rules for: shell spawned inside container, privilege escalation, sensitive file reads, unexpected outbound connections. Install Falco Sidekick to route alerts to a dedicated Slack channel #alerts-security.</div>
+        <div class="step-tools">
+          <span class="tool key">Falco</span>
+          <span class="tool key">Falco Sidekick</span>
+          <span class="tool">Syscall rules</span>
+          <span class="tool">Slack #alerts-security</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">13</div></div>
+      <div class="step-content">
+        <div class="step-title">Vault + External Secrets — Zero Static Secrets</div>
+        <div class="step-desc">Deploy HashiCorp Vault for dynamic secrets and PKI. Install External Secrets Operator to sync secrets from AWS Secrets Manager into Kubernetes Secrets automatically. No hardcoded secrets in manifests, Helm values, or environment variables.</div>
+        <div class="step-tools">
+          <span class="tool key">HashiCorp Vault</span>
+          <span class="tool key">External Secrets Operator</span>
+          <span class="tool">AWS Secrets Manager</span>
+          <span class="tool">Dynamic secrets</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PHASE 4 — PROGRESSIVE DELIVERY + PROD -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="phase" style="--c:#3ECBB4;--cb:#E0F7F3">
+  <div class="phase-header">
+    <div class="ph-bar"></div>
+    <div class="ph-meta">
+      <div class="ph-label">Phase 4</div>
+      <div class="ph-title">Progressive Delivery &amp; Prod</div>
+    </div>
+    <div class="ph-badge">Steps 14 – 17</div>
+  </div>
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num"><div class="sn">14</div></div>
+      <div class="step-content">
+        <div class="step-title">Argo Rollouts — Blue/Green and Canary</div>
+        <div class="step-desc">Install Argo Rollouts. Migrate staging deployments to blue/green strategy. Set up prod canary: start at 10% traffic, auto-promote using Prometheus error rate as the analysis metric. Auto-rollback if the metric threshold breaches.</div>
+        <div class="step-tools">
+          <span class="tool key">Argo Rollouts</span>
+          <span class="tool key">Blue/Green (staging)</span>
+          <span class="tool key">Canary (prod)</span>
+          <span class="tool">AnalysisTemplate</span>
+          <span class="tool">Prometheus metric gate</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">15</div></div>
+      <div class="step-content">
+        <div class="step-title">Separate Prod EKS Cluster — via Terraform</div>
+        <div class="step-desc">Provision a dedicated production EKS cluster using the same Terragrunt module as dev/qa/staging but with prod-grade node sizing, multi-AZ topology spread, separate VPC, private subnets, and tighter IAM. Prod cluster is never shared with any other environment.</div>
+        <div class="step-tools">
+          <span class="tool key">Separate EKS Cluster</span>
+          <span class="tool">Private subnets</span>
+          <span class="tool">Multi-AZ spread</span>
+          <span class="tool">Terragrunt</span>
+          <span class="tool">Karpenter</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">16</div></div>
+      <div class="step-content">
+        <div class="step-title">GitHub Environments — Manual Approval Gate to Prod</div>
+        <div class="step-desc">Configure a GitHub Environment named "production" with required reviewers. The prod CD workflow pauses here, sends a Slack notification with a direct approval link, and only proceeds after a reviewer approves in GitHub. This is the last human gate before prod.</div>
+        <div class="step-tools">
+          <span class="tool key">GitHub Environments</span>
+          <span class="tool key">Required Reviewers</span>
+          <span class="tool">Slack approval link</span>
+          <span class="tool">cd-prod.yml</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">17</div></div>
+      <div class="step-content">
+        <div class="step-title">TLS Everywhere — cert-manager + ACM</div>
+        <div class="step-desc">Install cert-manager for in-cluster TLS certificate management. Use AWS ACM for ALB/Ingress TLS termination. All internal service-to-service traffic is covered by Istio mTLS (Step 11). No unencrypted traffic anywhere.</div>
+        <div class="step-tools">
+          <span class="tool key">cert-manager</span>
+          <span class="tool key">AWS ACM</span>
+          <span class="tool">ClusterIssuer</span>
+          <span class="tool">ALB TLS</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PHASE 5 — OBSERVABILITY -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="phase" style="--c:#45B8E8;--cb:#E0F3FC">
+  <div class="phase-header">
+    <div class="ph-bar"></div>
+    <div class="ph-meta">
+      <div class="ph-label">Phase 5</div>
+      <div class="ph-title">Observability</div>
+    </div>
+    <div class="ph-badge">Steps 18 – 21</div>
+  </div>
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num"><div class="sn">18</div></div>
+      <div class="step-content">
+        <div class="step-title">Metrics — Prometheus + Grafana</div>
+        <div class="step-desc">Install kube-prometheus-stack via Helm. Includes Prometheus, Grafana, and a full set of pre-built Kubernetes dashboards. Add app-level dashboards for your service. Enable Grafana SSO via GitHub. Set SLO dashboards for prod.</div>
+        <div class="step-tools">
+          <span class="tool key">Prometheus</span>
+          <span class="tool key">Grafana</span>
+          <span class="tool">kube-prometheus-stack</span>
+          <span class="tool">SLO dashboards</span>
+          <span class="tool">Kubecost</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">19</div></div>
+      <div class="step-content">
+        <div class="step-title">Logs — Loki + Promtail</div>
+        <div class="step-desc">Install Loki and Promtail via Helm. Promtail runs as a DaemonSet and ships all container logs to Loki. Grafana becomes the single pane of glass for both metrics and logs. No separate log management tool needed.</div>
+        <div class="step-tools">
+          <span class="tool key">Loki</span>
+          <span class="tool key">Promtail</span>
+          <span class="tool">Grafana log explorer</span>
+          <span class="tool">Log retention policy</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">20</div></div>
+      <div class="step-content">
+        <div class="step-title">Traces — OpenTelemetry + Grafana Tempo</div>
+        <div class="step-desc">Deploy OpenTelemetry Collector as the vendor-neutral trace pipeline. Istio auto-instruments service-to-service calls. Traces ship to Grafana Tempo. Grafana links traces, logs, and metrics together — one click from a Grafana panel to the full trace.</div>
+        <div class="step-tools">
+          <span class="tool key">OpenTelemetry</span>
+          <span class="tool key">Grafana Tempo</span>
+          <span class="tool">Istio auto-instrument</span>
+          <span class="tool">Trace-log correlation</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">21</div></div>
+      <div class="step-content">
+        <div class="step-title">Alerting — Alertmanager + PagerDuty</div>
+        <div class="step-desc">Configure Alertmanager routing: warning alerts go to Slack #alerts, critical prod alerts go to PagerDuty for on-call escalation. Set up HPA, VPA, and PodDisruptionBudget on all deployments. Alertmanager silences during planned maintenance windows.</div>
+        <div class="step-tools">
+          <span class="tool key">Alertmanager</span>
+          <span class="tool key">PagerDuty (prod P1)</span>
+          <span class="tool">Slack routing</span>
+          <span class="tool">HPA + VPA + PDB</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PHASE 6 — FINAL HARDENING -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="phase" style="--c:#50D476;--cb:#EBF9EF">
+  <div class="phase-header">
+    <div class="ph-bar"></div>
+    <div class="ph-meta">
+      <div class="ph-label">Phase 6</div>
+      <div class="ph-title">Final Hardening &amp; Polish</div>
+    </div>
+    <div class="ph-badge">Steps 22 – 26</div>
+  </div>
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num"><div class="sn">22</div></div>
+      <div class="step-content">
+        <div class="step-title">Velero — Cluster Backup &amp; Restore</div>
+        <div class="step-desc">Install Velero with S3 as the backup target. Schedule daily full cluster backups including PVCs, secrets, and configmaps. Test a restore in the staging cluster before trusting it for prod. Define an RTO/RPO target and document the restore runbook.</div>
+        <div class="step-tools">
+          <span class="tool key">Velero</span>
+          <span class="tool">S3 backup target</span>
+          <span class="tool">Daily schedule</span>
+          <span class="tool">Restore tested</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">23</div></div>
+      <div class="step-content">
+        <div class="step-title">Karpenter — Node Autoscaling</div>
+        <div class="step-desc">Replace the default Cluster Autoscaler with Karpenter. Define NodePools with right-sized instance families. Karpenter provisions exact-fit nodes in seconds and consolidates underutilised nodes automatically — significant cost reduction at scale.</div>
+        <div class="step-tools">
+          <span class="tool key">Karpenter</span>
+          <span class="tool">NodePool</span>
+          <span class="tool">EC2NodeClass</span>
+          <span class="tool">Spot + On-demand mix</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">24</div></div>
+      <div class="step-content">
+        <div class="step-title">Checkov — Terraform Security Scan in Infra CI</div>
+        <div class="step-desc">Add Checkov to the infra workflow so every Terraform PR is automatically scanned for misconfigurations (open security groups, public S3 buckets, missing encryption). Fails the plan job if HIGH severity issues are found. No human needs to remember to check.</div>
+        <div class="step-tools">
+          <span class="tool key">Checkov</span>
+          <span class="tool">Terraform scan</span>
+          <span class="tool">infra-plan.yml</span>
+          <span class="tool">SARIF report</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">25</div></div>
+      <div class="step-content">
+        <div class="step-title">Semantic Release + Conventional Commits</div>
+        <div class="step-desc">Enforce Conventional Commits via a commit-msg hook (commitlint). Wire Semantic Release to run on merge to master — it auto-bumps the version, tags the release, and generates a changelog. Helm chart version and image tag are driven by this automatically.</div>
+        <div class="step-tools">
+          <span class="tool key">Semantic Release</span>
+          <span class="tool key">Conventional Commits</span>
+          <span class="tool">commitlint</span>
+          <span class="tool">Auto CHANGELOG</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+    <div class="step">
+      <div class="step-num"><div class="sn">26</div></div>
+      <div class="step-content">
+        <div class="step-title">Nightly Security Re-Scan + Final Branch Rules</div>
+        <div class="step-desc">Add a scheduled GitHub Actions workflow that re-scans all ECR images nightly with Trivy — catches newly disclosed CVEs on images already in production. Finalise master branch protection: required PR, required CI pass, required SonarCloud quality gate, no direct push, no force push.</div>
+        <div class="step-tools">
+          <span class="tool key">Nightly Trivy scan</span>
+          <span class="tool key">Branch protection (master)</span>
+          <span class="tool">Required reviewers</span>
+          <span class="tool">SonarCloud gate</span>
+        </div>
+      </div>
+      <div class="step-check"><div class="chk"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">World-Class Prod-Grade GitOps · AWS EKS · 26 Steps · 6 Phases</div>
+
+</div>
+</body>
+</html>

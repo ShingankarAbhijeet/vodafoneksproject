@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GitOps Architecture — AWS EKS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  background:#080F1C;
+  color:#C8D8F0;
+  font-family:'JetBrains Mono',monospace;
+  padding:48px 40px 56px;
+  min-width:1100px;
+}
+
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(60,120,220,0.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(60,120,220,0.035) 1px,transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;
+}
+
+.page{
+  position:relative;
+  max-width:1200px;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+
+/* ── HEADER ── */
+.header{
+  text-align:center;
+  padding:36px 32px 32px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:14px 14px 0 0;
+  border-bottom:none;
+  position:relative;
+  overflow:hidden;
+}
+.header::after{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,#6C5FE8,#3A8FE8,#3ECBB4,#50D476,#F0A020,#E86060);
+}
+.header h1{
+  font-family:'Syne',sans-serif;
+  font-size:30px;
+  font-weight:800;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:#E8F2FF;
+  margin-bottom:6px;
+}
+.header p{
+  font-size:11px;
+  color:rgba(200,216,240,0.45);
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+}
+.badges{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin-top:18px;
+  flex-wrap:wrap;
+}
+.badge{
+  padding:3px 10px;
+  border-radius:3px;
+  font-size:9px;
+  font-weight:500;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  border:1px solid;
+}
+
+/* ── LAYER ── */
+.layer{
+  border-left:1px solid rgba(255,255,255,0.06);
+  border-right:1px solid rgba(255,255,255,0.06);
+  background:#0C1828;
+  position:relative;
+}
+.layer::before{
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;width:3px;
+  background:var(--c);
+  opacity:0.85;
+}
+.layer:last-of-type{
+  border-radius:0 0 14px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+
+.lh{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:11px 22px 11px 22px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  background:rgba(0,0,0,0.18);
+}
+.lnum{
+  font-family:'Syne',sans-serif;
+  font-size:10px;
+  font-weight:700;
+  color:var(--c);
+  opacity:0.7;
+  letter-spacing:1px;
+  min-width:18px;
+}
+.ltitle{
+  font-family:'Syne',sans-serif;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--c);
+}
+.lsub{
+  margin-left:auto;
+  font-size:9px;
+  color:rgba(200,216,240,0.3);
+  letter-spacing:1px;
+}
+
+.lb{
+  padding:14px 22px 16px 22px;
+}
+
+/* ── CHIPS ── */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:4px 10px;
+  border-radius:4px;
+  font-size:10.5px;
+  font-weight:500;
+  background:rgba(255,255,255,0.035);
+  border:1px solid rgba(255,255,255,0.07);
+  color:rgba(200,216,240,0.8);
+  letter-spacing:0.2px;
+  white-space:nowrap;
+}
+.chip b{
+  width:6px;height:6px;border-radius:50%;
+  flex-shrink:0;
+  display:inline-block;
+  background:var(--c);
+}
+.chip.hi{
+  background:rgba(255,255,255,0.055);
+  border-color:rgba(255,255,255,0.12);
+  color:rgba(200,216,240,0.95);
+}
+
+.slabel{
+  font-size:9px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:rgba(200,216,240,0.28);
+  width:100%;
+  padding:8px 0 2px;
+}
+.slabel:first-child{padding-top:0}
+.sdiv{width:100%;height:1px;background:rgba(255,255,255,0.035);margin:6px 0}
+
+/* ── ARROW ── */
+.arrow{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:2px 0;
+  background:#0C1828;
+  border-left:1px solid rgba(255,255,255,0.06);
+  border-right:1px solid rgba(255,255,255,0.06);
+}
+.aline{width:1px;height:18px;background:rgba(60,140,232,0.22)}
+.ahead{
+  width:0;height:0;
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-top:7px solid rgba(60,140,232,0.22);
+}
+
+/* ── CLUSTER GRID ── */
+.cg{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1.15fr;
+  gap:10px;
+  margin-top:12px;
+}
+.cc{
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:8px;
+  overflow:hidden;
+}
+.cc.prod{border-color:rgba(248,120,60,0.28)}
+.cc-h{
+  padding:8px 12px;
+  font-family:'Syne',sans-serif;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  background:rgba(0,0,0,0.22);
+}
+.cc-b{padding:10px 12px;display:flex;flex-direction:column;gap:5px}
+.ci{
+  font-size:9.5px;
+  color:rgba(200,216,240,0.55);
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.ci::before{content:'▸';font-size:7px;color:var(--c);opacity:0.7}
+
+/* ── LEGEND ── */
+.legend{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  margin-top:28px;
+  padding:14px;
+  background:rgba(255,255,255,0.018);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:8px;
+  flex-wrap:wrap;
+}
+.li{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:9px;
+  color:rgba(200,216,240,0.42);
+  letter-spacing:0.5px;
+}
+.ld{width:8px;height:8px;border-radius:50%}
+
+.footer{
+  text-align:center;
+  margin-top:20px;
+  font-size:9px;
+  color:rgba(200,216,240,0.18);
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="header">
+  <h1>GitOps Architecture — AWS EKS</h1>
+  <p>GitHub Actions · ArgoCD · Istio · Kyverno · Falco · Terraform</p>
+  <div class="badges">
+    <span class="badge" style="color:#6C5FE8;border-color:rgba(108,95,232,.28);background:rgba(108,95,232,.07)">GitOps</span>
+    <span class="badge" style="color:#3A8FE8;border-color:rgba(58,143,232,.28);background:rgba(58,143,232,.07)">EKS</span>
+    <span class="badge" style="color:#E06060;border-color:rgba(224,96,96,.28);background:rgba(224,96,96,.07)">Zero Trust</span>
+    <span class="badge" style="color:#3ECBB4;border-color:rgba(62,203,180,.28);background:rgba(62,203,180,.07)">Service Mesh</span>
+    <span class="badge" style="color:#F0A020;border-color:rgba(240,160,32,.28);background:rgba(240,160,32,.07)">Progressive Delivery</span>
+    <span class="badge" style="color:#50D476;border-color:rgba(80,212,118,.28);background:rgba(80,212,118,.07)">Full Observability</span>
+  </div>
+</div>
+
+<!-- ① SOURCE -->
+<div class="layer" style="--c:#6C5FE8">
+  <div class="lh"><span class="lnum">①</span><span class="ltitle">Source Control</span><span class="lsub">Single source of truth</span></div>
+  <div class="lb">
+    <div class="chips">
+      <div class="chip hi"><b></b>GitHub — app repo + infra repo (split)</div>
+      <div class="chip"><b></b>feature/* → develop → release/* → master</div>
+      <div class="chip"><b></b>hotfix/* fast-track</div>
+      <div class="chip"><b></b>Branch protection + CODEOWNERS</div>
+      <div class="chip"><b></b>Conventional Commits</div>
+      <div class="chip"><b></b>Semantic Release (auto versioning)</div>
+    </div>
+  </div>
+</div>
+<div class="arrow"><div class="aline"></div><div class="ahead"></div></div>
+
+<!-- ② CI -->
+<div class="layer" style="--c:#3A8FE8">
+  <div class="lh"><span class="lnum">②</span><span class="ltitle">CI Pipeline — GitHub Actions</span><span class="lsub">On push / pull request</span></div>
+  <div class="lb">
+    <div class="chips">
+      <div class="slabel">Code quality</div>
+      <div class="chip hi"><b></b>SonarCloud — quality gate blocks merge</div>
+      <div class="chip"><b></b>Lint + unit tests + coverage</div>
+      <div class="sdiv"></div>
+      <div class="slabel">Build</div>
+      <div class="chip hi"><b></b>Docker multi-stage build (distroless)</div>
+      <div class="chip"><b></b>BuildKit layer cache</div>
+      <div class="chip"><b></b>Syft — SBOM generation</div>
+      <div class="sdiv"></div>
+      <div class="slabel">Security scanning</div>
+      <div class="chip hi"><b></b>Trivy — image + IaC scan (CRITICAL = fail)</div>
+      <div class="chip"><b></b>Gitleaks — secret scanning</div>
+      <div class="chip"><b></b>Checkov — Terraform scan</div>
+      <div class="chip"><b></b>Cosign — image signing (SLSA)</div>
+    </div>
+  </div>
+</div>
+<div class="arrow"><div class="aline"></div><div class="ahead"></div></div>
+
+<!-- ③ REGISTRY -->
+<div class="layer" style="--c:#50D476">
+  <div class="lh"><span class="lnum">③</span><span class="ltitle">Container Registry — AWS ECR</span><span class="lsub">Immutable, signed images</span></div>
+  <div class="lb">
+    <div class="chips">
+      <div class="chip hi"><b></b>ECR per-env repos — immutable tags</div>
+      <div class="chip"><b></b>ECR OCI — Helm chart storage</div>
+      <div class="chip"><b></b>Tag strategy: git-sha + semver on release</div>
+      <div class="chip"><b></b>ECR native scanning on every push</div>
+      <div class="chip"><b></b>Nightly re-scan scheduled workflow</div>
+    </div>
+  </div>
+</div>
+<div class="arrow"><div class="aline"></div><div class="ahead"></div></div>
+
+<!-- ④ GitOps -->
+<div class="layer" style="--c:#F0A020">
+  <div class="lh"><span class="lnum">④</span><span class="ltitle">GitOps Controller — ArgoCD</span><span class="lsub">Declarative continuous delivery</span></div>
+  <div class="lb">
+    <div class="chips">
+      <div class="chip hi"><b></b>App-of-Apps pattern — one root app per cluster</div>
+      <div class="chip hi"><b></b>Argo Rollouts — blue/green (staging) · canary (prod)</div>
+      <div class="chip"><b></b>ApplicationSet — auto-generates per env</div>
+      <div class="chip"><b></b>ArgoCD Image Updater — auto ECR sync</div>
+      <div class="chip"><b></b>Sync waves + PreSync/PostSync hooks</div>
+      <div class="chip"><b></b>RBAC + GitHub OAuth SSO</div>
+    </div>
+  </div>
+</div>
+<div class="arrow"><div class="aline"></div><div class="ahead"></div></div>
+
+<!-- ⑤ POLICY -->
+<div class="layer" style="--c:#D068A8">
+  <div class="lh"><span class="lnum">⑤</span><span class="ltitle">Policy Enforcement — Kyverno</span><span class="lsub">Admission control at cluster level</span></div>
+  <div class="lb">
+    <div class="chips">
+      <div class="chip hi"><b></b>Block :latest tag + require signed images</div>
+      <div class="chip hi"><b></b>Require resource requests &amp; limits on all pods</div>
+      <div class="chip"><b></b>Require liveness + readiness probes</div>
+      <div class="chip"><b></b>Pod Security Standards — restricted profile</div>
+      <div class="chip"><b></b>Auto-generate NetworkPolicy per namespace</div>
+      <div class="chip"><b></b>Calico — default-deny network policy</div>
+    </div>
+  </div>
+</div>
+<div class="arrow"><div class="aline"></div><div class="ahead"></div></div>
+
+<!-- ⑥ SERVICE MESH -->
+<div class="layer" style="--c:#3ECBB4">
+  <div class="lh"><span class="lnum">⑥</span><span class="ltitle">Service Mesh — Istio</span><span class="lsub">mTLS · traffic management · zero trust</span></div>
+  <div class="lb">
+    <div class="chips">
+      <div class="chip hi"><b></b>mTLS strict mode — all pod-to-pod traffic encrypted</div>
+      <div class="chip hi"><b></b>AuthorizationPolicy — zero-trust service auth</div>
+      <div class="chip"><b></b>VirtualService + DestinationRule</div>
+      <div class="chip"><b></b>Circuit breaking + retry + timeout policies</div>
+      <div class="chip"><b></b>Istio Gateway + AWS ALB (TLS termination)</div>
+      <div class="chip"><b></b>Kiali — live mesh topology &amp; traffic UI</div>
+    </div>
+  </div>
+</div>
+<div class="arrow"><div class="aline"></div><div class="ahead"></div></div>
+
+<!-- ⑦ CLUSTERS -->
+<div class="layer" style="--c:#7A9EC5">
+  <div class="lh"><span class="lnum">⑦</span><span class="ltitle">EKS Clusters</span><span class="lsub">Terraform + Terragrunt · separate cluster per env</span></div>
+  <div class="lb">
+    <div class="chips">
+      <div class="chip hi"><b></b>Karpenter — node autoscaling</div>
+      <div class="chip hi"><b></b>IRSA — no static AWS keys in pods</div>
+      <div class="chip"><b></b>OIDC federation — GitHub Actions → AWS</div>
+      <div class="chip"><b></b>HPA + VPA + PodDisruptionBudget</div>
+      <div class="chip"><b></b>Topology spread — multi-AZ by default</div>
+      <div class="chip"><b></b>cert-manager + ACM — TLS everywhere</div>
+      <div class="chip"><b></b>Velero — daily cluster backup to S3</div>
+    </div>
+    <div class="cg" style="--c:#7A9EC5">
+      <div class="cc">
+        <div class="cc-h" style="color:#7A9EC5">Dev</div>
+        <div class="cc-b">
+          <div class="ci">Auto deploy on merge</div>
+          <div class="ci">Rolling update</div>
+          <div class="ci">Namespace: dev</div>
+          <div class="ci">Relaxed policy</div>
+        </div>
+      </div>
+      <div class="cc">
+        <div class="cc-h" style="color:#7A9EC5">QA</div>
+        <div class="cc-b">
+          <div class="ci">Auto deploy after dev</div>
+          <div class="ci">Rolling update</div>
+          <div class="ci">Namespace: qa</div>
+          <div class="ci">Full policy enforced</div>
+        </div>
+      </div>
+      <div class="cc">
+        <div class="cc-h" style="color:#7A9EC5">Staging</div>
+        <div class="cc-b">
+          <div class="ci">Auto deploy after QA</div>
+          <div class="ci">Blue/green deploy</div>
+          <div class="ci">Prod-identical config</div>
+          <div class="ci">Slack notify → approval</div>
+        </div>
+      </div>
+      <div class="cc prod">
+        <div class="cc-h" style="color:#F07840">Production</div>
+        <div class="cc-b">
+          <div class="ci">Manual approval gate</div>
+          <div class="ci">Canary → 100% rollout</div>
+          <div class="ci">Auto rollback on errors</div>
+          <div class="ci">PagerDuty on failure</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="arrow"><div class="aline"></div><div class="ahead"></div></div>
+
+<!-- ⑧ RUNTIME SECURITY -->
+<div class="layer" style="--c:#E06060">
+  <div class="lh"><span class="lnum">⑧</span><span class="ltitle">Runtime Security &amp; Secrets</span><span class="lsub">Falco · Vault · External Secrets</span></div>
+  <div class="lb">
+    <div class="chips">
+      <div class="chip hi"><b></b>Falco — syscall-level threat detection</div>
+      <div class="chip hi"><b></b>Falco rules: shell spawn · privilege esc · file exfil</div>
+      <div class="chip"><b></b>Falco Sidekick → Slack #alerts-security</div>
+      <div class="chip"><b></b>HashiCorp Vault — dynamic secrets + PKI</div>
+      <div class="chip"><b></b>External Secrets Operator — AWS Secrets Manager sync</div>
+    </div>
+  </div>
+</div>
+<div class="arrow"><div class="aline"></div><div class="ahead"></div></div>
+
+<!-- ⑨ OBSERVABILITY -->
+<div class="layer" style="--c:#45B8E8">
+  <div class="lh"><span class="lnum">⑨</span><span class="ltitle">Observability</span><span class="lsub">Metrics · Logs · Traces · Alerts · Cost</span></div>
+  <div class="lb">
+    <div class="chips">
+      <div class="chip hi"><b></b>Prometheus + Grafana — metrics &amp; dashboards</div>
+      <div class="chip hi"><b></b>Loki + Promtail — log aggregation</div>
+      <div class="chip hi"><b></b>OpenTelemetry + Grafana Tempo — distributed tracing</div>
+      <div class="chip"><b></b>Alertmanager — severity-based routing</div>
+      <div class="chip"><b></b>Kubecost — cost per namespace / team</div>
+    </div>
+  </div>
+</div>
+<div class="arrow"><div class="aline"></div><div class="ahead"></div></div>
+
+<!-- ⑩ NOTIFICATIONS -->
+<div class="layer" style="--c:#60C870">
+  <div class="lh"><span class="lnum">⑩</span><span class="ltitle">Notifications &amp; Approval Gates</span><span class="lsub">Slack · PagerDuty · GitHub Environments</span></div>
+  <div class="lb">
+    <div class="chips">
+      <div class="chip hi"><b></b>#deployments — dev / qa / staging / prod events</div>
+      <div class="chip hi"><b></b>#alerts-security — Falco + Gitleaks hits</div>
+      <div class="chip"><b></b>#alerts-ci — build / sonar / trivy failures</div>
+      <div class="chip"><b></b>GitHub Environments — manual approval gate</div>
+      <div class="chip"><b></b>ArgoCD → Slack on sync failure or degraded</div>
+      <div class="chip"><b></b>PagerDuty — prod P1 on-call escalation</div>
+    </div>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="li"><div class="ld" style="background:#6C5FE8"></div>Source &amp; Branching</div>
+  <div class="li"><div class="ld" style="background:#3A8FE8"></div>CI Pipeline</div>
+  <div class="li"><div class="ld" style="background:#50D476"></div>Registry</div>
+  <div class="li"><div class="ld" style="background:#F0A020"></div>GitOps / ArgoCD</div>
+  <div class="li"><div class="ld" style="background:#D068A8"></div>Policy / Kyverno</div>
+  <div class="li"><div class="ld" style="background:#3ECBB4"></div>Service Mesh / Istio</div>
+  <div class="li"><div class="ld" style="background:#7A9EC5"></div>EKS Clusters</div>
+  <div class="li"><div class="ld" style="background:#E06060"></div>Runtime Security</div>
+  <div class="li"><div class="ld" style="background:#45B8E8"></div>Observability</div>
+  <div class="li"><div class="ld" style="background:#60C870"></div>Notifications</div>
+</div>
+
+<div class="footer">World-Class GitOps · AWS EKS · Production Grade</div>
+
+</div>
+</body>
+</html>

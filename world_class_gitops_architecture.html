@@ -1,0 +1,377 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.wrap{padding:16px 0;display:flex;flex-direction:column;gap:10px}
+.layer{border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.layer-header{display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.layer-body{display:flex;flex-wrap:wrap;gap:8px;padding:10px 14px 12px}
+.chip{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:400;cursor:pointer;transition:opacity .15s;border:1px solid transparent}
+.chip:hover{opacity:.75}
+.chip .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.chip .tag{font-size:10px;font-weight:500;padding:1px 5px;border-radius:3px;margin-left:2px}
+.arrow-row{display:flex;justify-content:center;align-items:center;height:20px;position:relative}
+.arrow-row::after{content:"";display:block;width:2px;height:16px;background:var(--color-border-secondary)}
+.arrow-head{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--color-border-secondary);margin:0 auto}
+
+.l-dev .layer-header{background:#EEEDFE;color:#3C3489}
+.l-ci  .layer-header{background:#E6F1FB;color:#0C447C}
+.l-sec .layer-header{background:#FCEBEB;color:#791F1F}
+.l-reg .layer-header{background:#EAF3DE;color:#27500A}
+.l-gitops .layer-header{background:#FAEEDA;color:#633806}
+.l-pol .layer-header{background:#FBEAF0;color:#72243E}
+.l-mesh .layer-header{background:#E1F5EE;color:#085041}
+.l-k8s .layer-header{background:#F1EFE8;color:#444441}
+.l-obs  .layer-header{background:#E6F1FB;color:#0C447C}
+.l-sec2 .layer-header{background:#FCEBEB;color:#791F1F}
+.l-notify .layer-header{background:#EAF3DE;color:#27500A}
+
+@media (prefers-color-scheme:dark){
+.l-dev .layer-header{background:#26215C;color:#CECBF6}
+.l-ci  .layer-header{background:#042C53;color:#B5D4F4}
+.l-sec .layer-header{background:#501313;color:#F7C1C1}
+.l-reg .layer-header{background:#173404;color:#C0DD97}
+.l-gitops .layer-header{background:#412402;color:#FAC775}
+.l-pol .layer-header{background:#4B1528;color:#F4C0D1}
+.l-mesh .layer-header{background:#04342C;color:#9FE1CB}
+.l-k8s .layer-header{background:#2C2C2A;color:#D3D1C7}
+.l-obs  .layer-header{background:#042C53;color:#B5D4F4}
+.l-sec2 .layer-header{background:#501313;color:#F7C1C1}
+.l-notify .layer-header{background:#173404;color:#C0DD97}
+}
+
+.chip-pur{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC}
+.chip-blu{background:#E6F1FB;color:#0C447C;border-color:#85B7EB}
+.chip-red{background:#FCEBEB;color:#791F1F;border-color:#F09595}
+.chip-grn{background:#EAF3DE;color:#27500A;border-color:#97C459}
+.chip-amb{background:#FAEEDA;color:#633806;border-color:#EF9F27}
+.chip-pnk{background:#FBEAF0;color:#72243E;border-color:#ED93B1}
+.chip-tel{background:#E1F5EE;color:#085041;border-color:#5DCAA5}
+.chip-gry{background:#F1EFE8;color:#444441;border-color:#B4B2A9}
+
+@media (prefers-color-scheme:dark){
+.chip-pur{background:#26215C;color:#CECBF6;border-color:#534AB7}
+.chip-blu{background:#042C53;color:#B5D4F4;border-color:#185FA5}
+.chip-red{background:#501313;color:#F7C1C1;border-color:#A32D2D}
+.chip-grn{background:#173404;color:#C0DD97;border-color:#3B6D11}
+.chip-amb{background:#412402;color:#FAC775;border-color:#854F0B}
+.chip-pnk{background:#4B1528;color:#F4C0D1;border-color:#993556}
+.chip-tel{background:#04342C;color:#9FE1CB;border-color:#0F6E56}
+.chip-gry{background:#2C2C2A;color:#D3D1C7;border-color:#5F5E5A}
+}
+
+.new-badge{background:#639922;color:#EAF3DE;font-size:9px;padding:1px 4px;border-radius:3px;font-weight:500;margin-left:2px;flex-shrink:0}
+@media (prefers-color-scheme:dark){.new-badge{background:#3B6D11;color:#C0DD97}}
+
+.section-label{font-size:11px;font-weight:500;color:var(--color-text-secondary);padding:2px 0 4px 0;width:100%;flex-basis:100%}
+.divider{width:100%;flex-basis:100%;height:1px;background:var(--color-border-tertiary);margin:4px 0}
+</style>
+
+<div class="wrap">
+
+<div class="layer l-dev">
+  <div class="layer-header">① Source control & branching strategy</div>
+  <div class="layer-body">
+    <div class="chip chip-pur" onclick="sendPrompt('Explain the branch strategy for this GitOps setup')">
+      <span class="dot" style="background:#7F77DD"></span>GitHub (mono/multi repo)
+    </div>
+    <div class="chip chip-pur" onclick="sendPrompt('What is the GitOps branch model used here?')">
+      <span class="dot" style="background:#7F77DD"></span>Branch model: feature/* → develop → release/* → master
+    </div>
+    <div class="chip chip-pur" onclick="sendPrompt('What branch protection rules should I set?')">
+      <span class="dot" style="background:#7F77DD"></span>Branch protection + CODEOWNERS
+    </div>
+    <div class="chip chip-pur" onclick="sendPrompt('What is conventional commits and why use it?')">
+      <span class="dot" style="background:#534AB7"></span>Conventional Commits <span class="new-badge">+Claude</span>
+    </div>
+    <div class="chip chip-pur" onclick="sendPrompt('What is semantic-release and how does it work?')">
+      <span class="dot" style="background:#534AB7"></span>Semantic Release (auto versioning) <span class="new-badge">+Claude</span>
+    </div>
+  </div>
+</div>
+
+<div class="arrow-row"><div class="arrow-head"></div></div>
+
+<div class="layer l-ci">
+  <div class="layer-header">② CI pipeline — GitHub Actions (on push / PR)</div>
+  <div class="layer-body">
+    <div class="section-label">Code quality</div>
+    <div class="chip chip-blu" onclick="sendPrompt('How do I set up SonarCloud in GitHub Actions?')">
+      <span class="dot" style="background:#378ADD"></span>SonarCloud (quality gate blocks merge)
+    </div>
+    <div class="chip chip-blu" onclick="sendPrompt('How do I add lint checks to CI?')">
+      <span class="dot" style="background:#378ADD"></span>Lint + unit tests + coverage report
+    </div>
+    <div class="chip chip-blu" onclick="sendPrompt('What is Danger JS and how does it help PRs?')">
+      <span class="dot" style="background:#185FA5"></span>Danger JS (PR checks automation) <span class="new-badge">+Claude</span>
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">Build</div>
+    <div class="chip chip-blu" onclick="sendPrompt('What is a multi-stage Dockerfile?')">
+      <span class="dot" style="background:#378ADD"></span>Docker multi-stage build (distroless final image)
+    </div>
+    <div class="chip chip-blu" onclick="sendPrompt('How do I use GitHub Actions cache for Docker layers?')">
+      <span class="dot" style="background:#378ADD"></span>GitHub cache (Docker layer caching)
+    </div>
+    <div class="chip chip-blu" onclick="sendPrompt('What is BuildKit and why use it?')">
+      <span class="dot" style="background:#185FA5"></span>BuildKit + SBOM generation via Syft <span class="new-badge">+Claude</span>
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">Security scanning (CI)</div>
+    <div class="chip chip-red" onclick="sendPrompt('How do I add Trivy to GitHub Actions?')">
+      <span class="dot" style="background:#E24B4A"></span>Trivy (image + filesystem + IaC scan)
+    </div>
+    <div class="chip chip-red" onclick="sendPrompt('What is Gitleaks and how do I set it up?')">
+      <span class="dot" style="background:#A32D2D"></span>Gitleaks (secret scanning in commits) <span class="new-badge">+Claude</span>
+    </div>
+    <div class="chip chip-red" onclick="sendPrompt('What is Checkov and how does it scan Terraform?')">
+      <span class="dot" style="background:#A32D2D"></span>Checkov (Terraform security scan) <span class="new-badge">+Claude</span>
+    </div>
+    <div class="chip chip-red" onclick="sendPrompt('What is Cosign and how do I sign container images?')">
+      <span class="dot" style="background:#E24B4A"></span>Cosign (image signing — supply chain)
+    </div>
+  </div>
+</div>
+
+<div class="arrow-row"><div class="arrow-head"></div></div>
+
+<div class="layer l-reg">
+  <div class="layer-header">③ Container & artifact registry</div>
+  <div class="layer-body">
+    <div class="chip chip-grn" onclick="sendPrompt('How do I set up ECR with image immutability?')">
+      <span class="dot" style="background:#639922"></span>AWS ECR (per-env repos, immutable tags)
+    </div>
+    <div class="chip chip-grn" onclick="sendPrompt('How do I store Helm charts in ECR OCI?')">
+      <span class="dot" style="background:#639922"></span>ECR OCI (Helm chart storage)
+    </div>
+    <div class="chip chip-grn" onclick="sendPrompt('How do I tag images with git SHA and semver?')">
+      <span class="dot" style="background:#3B6D11"></span>Image tags: git-sha + semver on release
+    </div>
+    <div class="chip chip-grn" onclick="sendPrompt('What is ECR image scanning and how does it work?')">
+      <span class="dot" style="background:#3B6D11"></span>ECR native scanning (on every push)
+    </div>
+  </div>
+</div>
+
+<div class="arrow-row"><div class="arrow-head"></div></div>
+
+<div class="layer l-gitops">
+  <div class="layer-header">④ GitOps controller — ArgoCD</div>
+  <div class="layer-body">
+    <div class="chip chip-amb" onclick="sendPrompt('How does ArgoCD work as a GitOps controller?')">
+      <span class="dot" style="background:#BA7517"></span>ArgoCD (per-cluster, app-of-apps pattern)
+    </div>
+    <div class="chip chip-amb" onclick="sendPrompt('What is the ArgoCD app-of-apps pattern?')">
+      <span class="dot" style="background:#BA7517"></span>ApplicationSet (auto-generate per env)
+    </div>
+    <div class="chip chip-amb" onclick="sendPrompt('How do I set up ArgoCD image updater?')">
+      <span class="dot" style="background:#854F0B"></span>ArgoCD Image Updater (auto ECR sync) <span class="new-badge">+Claude</span>
+    </div>
+    <div class="chip chip-amb" onclick="sendPrompt('How do I set up ArgoCD RBAC and SSO?')">
+      <span class="dot" style="background:#854F0B"></span>ArgoCD RBAC + SSO (GitHub OAuth)
+    </div>
+    <div class="chip chip-amb" onclick="sendPrompt('What is progressive delivery with Argo Rollouts?')">
+      <span class="dot" style="background:#BA7517"></span>Argo Rollouts (blue/green + canary for prod) <span class="new-badge">+Claude</span>
+    </div>
+    <div class="chip chip-amb" onclick="sendPrompt('What are ArgoCD sync waves and hooks?')">
+      <span class="dot" style="background:#854F0B"></span>Sync waves + PreSync/PostSync hooks
+    </div>
+  </div>
+</div>
+
+<div class="arrow-row"><div class="arrow-head"></div></div>
+
+<div class="layer l-pol">
+  <div class="layer-header">⑤ Policy enforcement — Kyverno</div>
+  <div class="layer-body">
+    <div class="chip chip-pnk" onclick="sendPrompt('What Kyverno policies should I enforce in production?')">
+      <span class="dot" style="background:#D4537E"></span>Kyverno (validate, mutate, generate policies)
+    </div>
+    <div class="chip chip-pnk" onclick="sendPrompt('What is a Kyverno policy for requiring resource limits?')">
+      <span class="dot" style="background:#D4537E"></span>Policy: enforce resource limits on all pods
+    </div>
+    <div class="chip chip-pnk" onclick="sendPrompt('How do I block latest image tag with Kyverno?')">
+      <span class="dot" style="background:#993556"></span>Policy: block :latest tag, require signed images
+    </div>
+    <div class="chip chip-pnk" onclick="sendPrompt('What Kyverno policy enforces readiness probes?')">
+      <span class="dot" style="background:#993556"></span>Policy: require liveness + readiness probes
+    </div>
+    <div class="chip chip-pnk" onclick="sendPrompt('What is Pod Security Standards enforcement?')">
+      <span class="dot" style="background:#D4537E"></span>Pod Security Standards (restricted profile)
+    </div>
+    <div class="chip chip-pnk" onclick="sendPrompt('How do I auto-generate NetworkPolicies with Kyverno?')">
+      <span class="dot" style="background:#993556"></span>Auto-generate NetworkPolicy per namespace <span class="new-badge">+Claude</span>
+    </div>
+  </div>
+</div>
+
+<div class="arrow-row"><div class="arrow-head"></div></div>
+
+<div class="layer l-mesh">
+  <div class="layer-header">⑥ Service mesh — Istio</div>
+  <div class="layer-body">
+    <div class="chip chip-tel" onclick="sendPrompt('How does Istio mTLS work between services?')">
+      <span class="dot" style="background:#1D9E75"></span>mTLS (automatic, strict mode — all traffic encrypted)
+    </div>
+    <div class="chip chip-tel" onclick="sendPrompt('What are Istio traffic management features?')">
+      <span class="dot" style="background:#1D9E75"></span>Traffic management (VirtualService, DestinationRule)
+    </div>
+    <div class="chip chip-tel" onclick="sendPrompt('How do I do canary deployments with Istio?')">
+      <span class="dot" style="background:#0F6E56"></span>Canary / weight-based traffic splits
+    </div>
+    <div class="chip chip-tel" onclick="sendPrompt('How does Istio circuit breaking work?')">
+      <span class="dot" style="background:#0F6E56"></span>Circuit breaking + retry + timeout policies
+    </div>
+    <div class="chip chip-tel" onclick="sendPrompt('How does Istio integrate with Kiali?')">
+      <span class="dot" style="background:#1D9E75"></span>Kiali (service mesh topology UI) <span class="new-badge">+Claude</span>
+    </div>
+    <div class="chip chip-tel" onclick="sendPrompt('What is Istio AuthorizationPolicy?')">
+      <span class="dot" style="background:#0F6E56"></span>AuthorizationPolicy (zero-trust pod-to-pod)
+    </div>
+    <div class="chip chip-tel" onclick="sendPrompt('How do I expose services externally with Istio Ingress?')">
+      <span class="dot" style="background:#1D9E75"></span>Istio Gateway + AWS ALB (TLS termination)
+    </div>
+  </div>
+</div>
+
+<div class="arrow-row"><div class="arrow-head"></div></div>
+
+<div class="layer l-k8s">
+  <div class="layer-header">⑦ Kubernetes — EKS clusters (dev / qa / staging / prod)</div>
+  <div class="layer-body">
+    <div class="section-label">Cluster provisioning</div>
+    <div class="chip chip-gry" onclick="sendPrompt('How do I manage multiple EKS clusters with Terraform and Terragrunt?')">
+      <span class="dot" style="background:#888780"></span>Terraform + Terragrunt (per-env DRY configs)
+    </div>
+    <div class="chip chip-gry" onclick="sendPrompt('What is Karpenter and how does it replace Cluster Autoscaler?')">
+      <span class="dot" style="background:#888780"></span>Karpenter (node autoscaling) <span class="new-badge">+Claude</span>
+    </div>
+    <div class="chip chip-gry" onclick="sendPrompt('What EKS add-ons should I install?')">
+      <span class="dot" style="background:#5F5E5A"></span>EKS add-ons: ALB controller, EBS/EFS CSI, CoreDNS
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">Workload hardening</div>
+    <div class="chip chip-gry" onclick="sendPrompt('What are HPA and VPA and when should I use each?')">
+      <span class="dot" style="background:#888780"></span>HPA + VPA (horizontal + vertical autoscaling)
+    </div>
+    <div class="chip chip-gry" onclick="sendPrompt('What is PodDisruptionBudget and why is it important?')">
+      <span class="dot" style="background:#888780"></span>PodDisruptionBudget on every deployment
+    </div>
+    <div class="chip chip-gry" onclick="sendPrompt('How do I use topology spread constraints in Kubernetes?')">
+      <span class="dot" style="background:#5F5E5A"></span>Topology spread constraints (AZ spread) <span class="new-badge">+Claude</span>
+    </div>
+    <div class="chip chip-gry" onclick="sendPrompt('What are Helm charts and how do I structure them?')">
+      <span class="dot" style="background:#888780"></span>Helm charts (per service, stored in ECR OCI)
+    </div>
+    <div class="chip chip-gry" onclick="sendPrompt('What is IRSA and how does it work?')">
+      <span class="dot" style="background:#5F5E5A"></span>IRSA (no static AWS keys, ever)
+    </div>
+    <div class="chip chip-gry" onclick="sendPrompt('What is AWS OIDC federation for GitHub Actions?')">
+      <span class="dot" style="background:#888780"></span>OIDC federation (GitHub → AWS, no secrets)
+    </div>
+    <div class="chip chip-gry" onclick="sendPrompt('What Calico network policies should I configure?')">
+      <span class="dot" style="background:#5F5E5A"></span>Calico network policies (default-deny)
+    </div>
+    <div class="chip chip-gry" onclick="sendPrompt('How do I set up cert-manager for TLS?')">
+      <span class="dot" style="background:#888780"></span>cert-manager + ACM (TLS everywhere)
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">Disaster recovery</div>
+    <div class="chip chip-gry" onclick="sendPrompt('What is Velero and how does it backup Kubernetes?')">
+      <span class="dot" style="background:#5F5E5A"></span>Velero (cluster backup + restore) <span class="new-badge">+Claude</span>
+    </div>
+  </div>
+</div>
+
+<div class="arrow-row"><div class="arrow-head"></div></div>
+
+<div class="layer l-sec2">
+  <div class="layer-header">⑧ Runtime security — Falco + secrets management</div>
+  <div class="layer-body">
+    <div class="chip chip-red" onclick="sendPrompt('How does Falco detect runtime threats in Kubernetes?')">
+      <span class="dot" style="background:#E24B4A"></span>Falco (syscall-level runtime threat detection)
+    </div>
+    <div class="chip chip-red" onclick="sendPrompt('What Falco rules should I enable for production?')">
+      <span class="dot" style="background:#A32D2D"></span>Falco rules: shell spawn, privilege escalation, file exfil
+    </div>
+    <div class="chip chip-red" onclick="sendPrompt('How do I route Falco alerts to Slack?')">
+      <span class="dot" style="background:#E24B4A"></span>Falco Sidekick → Slack #alerts-security
+    </div>
+    <div class="chip chip-red" onclick="sendPrompt('What is HashiCorp Vault and how do I integrate it with Kubernetes?')">
+      <span class="dot" style="background:#A32D2D"></span>HashiCorp Vault (dynamic secrets, PKI) <span class="new-badge">+Claude</span>
+    </div>
+    <div class="chip chip-red" onclick="sendPrompt('What is External Secrets Operator and how does it work?')">
+      <span class="dot" style="background:#E24B4A"></span>External Secrets Operator (AWS Secrets Manager sync)
+    </div>
+    <div class="chip chip-red" onclick="sendPrompt('What is a scheduled nightly Trivy scan workflow?')">
+      <span class="dot" style="background:#A32D2D"></span>Nightly ECR re-scan (scheduled Trivy workflow)
+    </div>
+  </div>
+</div>
+
+<div class="arrow-row"><div class="arrow-head"></div></div>
+
+<div class="layer l-obs">
+  <div class="layer-header">⑨ Observability — full-stack</div>
+  <div class="layer-body">
+    <div class="section-label">Metrics</div>
+    <div class="chip chip-blu" onclick="sendPrompt('How do I install kube-prometheus-stack with Helm?')">
+      <span class="dot" style="background:#378ADD"></span>Prometheus + Grafana (kube-prometheus-stack)
+    </div>
+    <div class="chip chip-blu" onclick="sendPrompt('What dashboards should I have in Grafana?')">
+      <span class="dot" style="background:#185FA5"></span>Grafana dashboards (cluster, app, SLO, cost)
+    </div>
+    <div class="chip chip-blu" onclick="sendPrompt('What is Kubecost and how does it track cluster spend?')">
+      <span class="dot" style="background:#185FA5"></span>Kubecost (real-time cost per namespace) <span class="new-badge">+Claude</span>
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">Logs</div>
+    <div class="chip chip-blu" onclick="sendPrompt('How do I set up Loki and Promtail for log aggregation?')">
+      <span class="dot" style="background:#378ADD"></span>Loki + Promtail (log aggregation, GitOps-native)
+    </div>
+    <div class="chip chip-blu" onclick="sendPrompt('What is CloudWatch Container Insights?')">
+      <span class="dot" style="background:#185FA5"></span>CloudWatch Container Insights (AWS-native fallback)
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">Tracing</div>
+    <div class="chip chip-blu" onclick="sendPrompt('How do I set up OpenTelemetry with Grafana Tempo?')">
+      <span class="dot" style="background:#378ADD"></span>OpenTelemetry Collector + Grafana Tempo <span class="new-badge">+Claude</span>
+    </div>
+    <div class="chip chip-blu" onclick="sendPrompt('How does Istio integrate with distributed tracing?')">
+      <span class="dot" style="background:#185FA5"></span>Istio telemetry (auto-trace service-to-service)
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">Alerting</div>
+    <div class="chip chip-blu" onclick="sendPrompt('How do I configure Alertmanager routing rules?')">
+      <span class="dot" style="background:#378ADD"></span>Alertmanager (severity-based routing)
+    </div>
+    <div class="chip chip-blu" onclick="sendPrompt('How do I integrate PagerDuty with Alertmanager for prod incidents?')">
+      <span class="dot" style="background:#185FA5"></span>PagerDuty (prod P1 incidents) <span class="new-badge">+Claude</span>
+    </div>
+  </div>
+</div>
+
+<div class="arrow-row"><div class="arrow-head"></div></div>
+
+<div class="layer l-notify">
+  <div class="layer-header">⑩ Notifications & approval gates</div>
+  <div class="layer-body">
+    <div class="chip chip-grn" onclick="sendPrompt('What are the Slack channels I should set up for this pipeline?')">
+      <span class="dot" style="background:#639922"></span>#deployments — dev / qa / staging / prod events
+    </div>
+    <div class="chip chip-grn" onclick="sendPrompt('How do I send CI failure alerts to Slack?')">
+      <span class="dot" style="background:#639922"></span>#alerts-ci — build / sonar / trivy failures
+    </div>
+    <div class="chip chip-grn" onclick="sendPrompt('How do I send Falco runtime alerts to Slack?')">
+      <span class="dot" style="background:#3B6D11"></span>#alerts-security — Falco + Gitleaks hits
+    </div>
+    <div class="chip chip-grn" onclick="sendPrompt('How do I configure GitHub Actions manual approval gate?')">
+      <span class="dot" style="background:#639922"></span>GitHub Environments (manual approval before prod)
+    </div>
+    <div class="chip chip-grn" onclick="sendPrompt('How do I post ArgoCD sync status to Slack?')">
+      <span class="dot" style="background:#3B6D11"></span>ArgoCD → Slack (sync success / degraded alerts)
+    </div>
+  </div>
+</div>
+
+</div>
