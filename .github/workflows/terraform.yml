@@ -26,6 +26,17 @@ jobs:
           aws-region: us-east-1
           role-duration-seconds: 900
 
+      # 🔥 ADD THIS (generate kubeconfig)
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+            --name example \
+            --region us-east-1
+
+      # 🔍 (optional but recommended debug)
+      - name: Verify cluster access
+        run: kubectl get nodes
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
 
@@ -44,7 +55,7 @@ jobs:
   apply:
     needs: plan
     runs-on: ubuntu-latest
-    environment: dev   # 👈 IMPORTANT
+    environment: dev
 
     permissions:
       id-token: write
@@ -65,6 +76,16 @@ jobs:
           role-to-assume: arn:aws:iam::314133462348:role/github-actions-prod
           aws-region: us-east-1
           role-duration-seconds: 900
+
+      # 🔥 ADD THIS AGAIN (each job is fresh VM)
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+            --name example \
+            --region us-east-1
+
+      - name: Verify cluster access
+        run: kubectl get nodes
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
