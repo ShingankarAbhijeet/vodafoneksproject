@@ -1,0 +1,28 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "6.40.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "3.1.0"
+    } 
+  }
+  backend "s3" {
+    bucket = "abz-terraform-state-bucket123"
+    key = "eks/terraform.tfstate"
+    region = "us-east-1"
+    dynamodb_table = "abz-terraform-state-table"
+  }
+}
+
+provider "aws" {
+  # Configuration options
+  region     = "us-east-1"
+}
+
+provider "kubernetes" {
+ config_path = pathexpand("~/.kube/config")
+ config_context = "my-context" 
+}
