@@ -23,6 +23,6 @@ provider "aws" {
 }
 
 provider "kubernetes" {
- config_path = pathexpand("~/.kube/config")
+ config_path = "/c/Users/shing/config"
  config_context = "my-context" 
 }
