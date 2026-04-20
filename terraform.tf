@@ -18,3 +18,16 @@ provider "aws" {
   region     = "us-east-1"
 }
 
+terraform {
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "3.1.0"
+    }
+  }
+}
+
+provider "kubernetes" {
+ config_path = "/c/Users/shing/config"
+ config_context = "my-context" 
+}

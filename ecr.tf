@@ -1,4 +1,4 @@
-/*resource "aws_ecr_repository" "examplereg" {
+resource "aws_ecr_repository" "examplereg" {
   for_each = toset(var.env)
   name = "${var.Project}/${each.value}"
   image_tag_mutability = "IMMUTABLE"
@@ -31,4 +31,3 @@ resource "aws_ecr_lifecycle_policy" "example" {
     ]
   })
 }
-*/
