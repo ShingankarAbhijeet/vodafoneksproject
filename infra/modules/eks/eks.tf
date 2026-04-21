@@ -104,7 +104,7 @@ resource "aws_eks_node_group" "example" {
   node_group_name = "example-node-group1"
   node_role_arn   = aws_iam_role.node_group.arn
   subnet_ids      = data.aws_subnets.default.ids
-  instance_types  = ["t2.micro"]
+  instance_types  = ["t3.micro"]
 
   scaling_config {
     desired_size = 1
