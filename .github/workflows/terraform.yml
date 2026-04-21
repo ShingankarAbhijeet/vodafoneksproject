@@ -8,7 +8,6 @@ on:
 
 jobs:
   plan:
-    environment: dev
     runs-on: ubuntu-latest
 
     permissions:
