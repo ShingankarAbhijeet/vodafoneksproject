@@ -1,5 +1,5 @@
 
-resource "aws_ecr_repository" "examplereg" {
+resource "aws_ecr_repository" "infra-repo" {
   for_each = toset(var.env)
   name = "${var.Project}/${each.value}"
   image_tag_mutability = "IMMUTABLE"
@@ -11,6 +11,13 @@ resource "aws_ecr_repository" "examplereg" {
   }
 }
 
+resource "aws_ecr_repository" "app-repo" {
+  name = "app-repo"
+  image_tag_mutability = "IMMUTABLE"
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
 resource "aws_ecr_lifecycle_policy" "example" {
   for_each = aws_ecr_repository.examplereg
   repository = each.value.name

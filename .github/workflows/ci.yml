@@ -13,9 +13,6 @@ jobs:
             AWS_REGION: us-east-1
             ECR-REPO: app-repo
         steps:
-            - name: Check ECR exists
-              run: |
-                 aws ecr describe-repositories --repository-names $ECR_REPO
             - name: checkout
               uses: action/checkout@4
             - name: configure AWS creds
