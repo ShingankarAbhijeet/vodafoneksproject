@@ -1,4 +1,4 @@
-
+/*
 resource "aws_ecr_repository" "infra-repo" {
   for_each = toset(var.env)
   name = "${var.Project}/${each.value}"
@@ -32,3 +32,4 @@ resource "aws_ecr_lifecycle_policy" "example" {
     ]
   })
 }
+*/
