@@ -19,7 +19,7 @@ resource "aws_ecr_repository" "app-repo" {
   }
 }
 resource "aws_ecr_lifecycle_policy" "example" {
-  for_each = aws_ecr_repository.examplereg
+  for_each = aws_ecr_repository.infra-repo
   repository = each.value.name
 
   policy = jsonencode({
