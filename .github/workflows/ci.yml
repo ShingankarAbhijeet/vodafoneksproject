@@ -41,7 +41,7 @@ jobs:
                 exit-code: 1
             - name: tag image to ECR
               run: |   
-                ACCOUNT_ID: $(aws sts get-caller-identity --query Account --output text)
+                ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
                 docker tag $ECR_REPO:$IMAGE_TAG \
                 $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
 
