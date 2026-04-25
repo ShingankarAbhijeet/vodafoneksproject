@@ -13,9 +13,7 @@ jobs:
             AWS_REGION: us-east-1
             ECR_REPO: worldclassprodgrade/app-repo
         steps:
-            - name: Check ECR exists
-              run: |
-                 aws ecr describe-repositories --repository-names $ECR_REPO
+            
             - name: checkout
               uses: actions/checkout@v4
             - name: configure AWS creds
@@ -23,6 +21,9 @@ jobs:
               with:
                 role-to-assume: arn:aws:iam::314133462348:role/github-actions-prod
                 aws-region: ${{ env.AWS_REGION}}
+            - name: Check ECR exists
+              run: |
+                   aws ecr describe-repositories --repository-names $ECR_REPO
             - name: login to ECR
               uses: aws-actions/amazon-ecr-login@v2
             - name: set image tag
