@@ -1,0 +1,28 @@
+server:
+  service:
+    type: ClusterIP
+
+  ingress:
+    enabled: false   # keep simple for now (no ingress yet)
+
+configs:
+  params:
+    server.insecure: true
+
+controller:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+repoServer:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+redis:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi

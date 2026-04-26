@@ -49,7 +49,9 @@ jobs:
     permissions:
       id-token: write
       contents: read
-
+    env:
+      CLUSTER_NAME: "example"
+      AWS_REGION: "us-east-1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -80,4 +82,31 @@ jobs:
         with:
           name: errored-tfstate
           path: errored.tfstate
-        
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+      - name: Configure kubeconfig
+        run: |
+          aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
+      - name: wait for node
+        run: |
+          kubelet get nodes
+          sleep 30
+
+      - name: Install ArgoCD
+        run: |
+          kubectl create namespace argocd || true
+          helm repo add argo https://argoproj.github.io/argo-helm
+          helm repo update
+          helm upgrade --install argocd argo/argo-cd \
+            --namespace argocd \
+            -f helm-charts/values/argocd-values.yaml
+      
+
+      - name: Upload errored state (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+              name: errored-tfstate
+              path: errored.tfstate

@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "3.1.0"
     } 
+    helm = {
+      source = "hashicorp/helm"
+      version = "3.1.1"
+    }
   }
   backend "s3" {
     bucket = "abz-terraform-state-bucket123"
@@ -25,4 +29,7 @@ provider "aws" {
 provider "kubernetes" {
  config_path = "/c/Users/shing/config"
  config_context = "my-context" 
+}
+provider "" {
+  
 }
