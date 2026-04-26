@@ -30,6 +30,3 @@ provider "kubernetes" {
  config_path = "/c/Users/shing/config"
  config_context = "my-context" 
 }
-provider "" {
-  
-}
