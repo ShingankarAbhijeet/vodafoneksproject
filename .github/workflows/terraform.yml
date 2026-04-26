@@ -91,7 +91,7 @@ jobs:
             ECR=314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/dev
             docker pull quay.io/argoproj/argocd:v3.3.8
             docker tag quay.io/argoproj/argocd:v3.3.8 $ECR/argocd-v3.3.8
-            docker push $IMAGE:argocd-v3.3.8
+            docker push $ECR/argocd-v3.3.8
             docker tag quay.io/argoproj/argocd:v3.3.8 $ECR/argocd-repo-server:3.3.8
             docker push $ECR/argocd-repo-server:3.3.8
             docker tag quay.io/argoproj/argocd:v3.3.8 $ECR/argocd-application-controller:3.3.8
@@ -102,8 +102,8 @@ jobs:
             docker tag quay.io/argoproj/argocd:v3.3.8 $ECR/argocd-notifications-controller:3.3.8
             docker push $ECR/argocd-notifications-controller:3.3.8
             docker pull redis:7.0
-            docker tag redis:7.0 $IMAGE:redis-7.0
-            docker push $IMAGE:redis-7.0
+            docker tag redis:7.0 $ECR/redis-7.0
+            docker push $ECR/redis-7.0
       - name: Setup Helm
         uses: azure/setup-helm@v4
         with:
