@@ -92,7 +92,9 @@ jobs:
       - name: wait for node
         run: |
           kubectl get nodes
-          sleep 300
+          echo "Waiting for nodes to become Ready..."
+          kubectl wait --for=condition=Ready nodes --all --timeout=300s
+          
 
       - name: Install ArgoCD
         run: |
@@ -101,7 +103,9 @@ jobs:
           helm repo update
           helm upgrade --install argocd argo/argo-cd \
             --namespace argocd \
-            -f helm-charts/values/argocd-values.yaml
+            -f helm-charts/values/argocd-values.yaml \
+            --wait \
+            --timeout 10m
       
 
       - name: Upload errored state (on failure)
