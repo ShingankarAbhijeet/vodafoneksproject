@@ -1,5 +1,5 @@
 # ─── Data Sources: Default VPC & Subnets ───────────────────────────────────────#####
-/*
+
 data "aws_vpc" "default" {
   default = true
 }
@@ -141,4 +141,3 @@ resource "aws_eks_access_policy_association" "abz_admin" {
     type = "cluster"
   }
 }
-*/
