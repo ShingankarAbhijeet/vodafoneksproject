@@ -1,5 +1,6 @@
 module "eks" {
   source = "./infra/modules/eks"
+  
 }
 module "ecr" {
   source = "./infra/modules/ecr"
