@@ -107,9 +107,9 @@ resource "aws_eks_node_group" "example" {
   instance_types  = ["t3.micro"]
 
   scaling_config {
-    desired_size = 1
-    min_size     = 1
-    max_size     = 2
+    desired_size = 2
+    min_size     = 2
+    max_size     = 3
   }
 
   update_config {
@@ -136,6 +136,24 @@ resource "aws_eks_access_policy_association" "abz_admin" {
   principal_arn = aws_eks_access_entry.abz.principal_arn
 
   policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   access_scope {
     type = "cluster"
