@@ -91,7 +91,7 @@ jobs:
           aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
       - name: wait for node
         run: |
-          kubelet get nodes
+          kubectl get nodes
           sleep 30
 
       - name: Install ArgoCD
