@@ -10,6 +10,7 @@ terraform {
     bucket = "abz-terraform-state-bucket123"
     key = "eks/terraform.tfstate"
     region = "us-east-1"
+    
     dynamodb_table = "abz-terraform-state-table"
   }
 }
