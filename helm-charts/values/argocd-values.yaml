@@ -31,7 +31,7 @@ notifications:
 redis:
   image:
     repository: 314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/redis
-    tag: "7.0
+    tag: "7.0"
 
 server:
   service:
