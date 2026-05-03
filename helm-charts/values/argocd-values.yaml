@@ -21,12 +21,12 @@ server:
 dex:
   image:
     repository: 314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/dev
-    tag: "3.3.8"
+    tag: "v3.3.8"
 
 notifications:
   image:
     repository: 314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/argocd-notifications-controller
-    tag: "3.3.8"
+    tag: "v3.3.8"
 
 redis:
   image:
