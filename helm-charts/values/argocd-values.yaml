@@ -2,32 +2,6 @@ global:
   image: 
     repoitory: 314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/dev
     tag: "v3.3.8"
-
-controller:
-  image:
-    repository: 314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/dev
-    tag: "v3.3.8"
-
-repoServer:
-  image:
-    repository: 314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/dev
-    tag: "v3.3.8"
-
-server:
-  image:
-    repository: 314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/dev
-    tag: "v3.3.8"
-
-dex:
-  image:
-    repository: 314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/dev
-    tag: "v3.3.8"
-
-notifications:
-  image:
-    repository: 314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/argocd-notifications-controller
-    tag: "v3.3.8"
-
 redis:
   image:
     repository: 314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/redis
