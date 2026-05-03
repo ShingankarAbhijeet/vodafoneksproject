@@ -101,9 +101,9 @@ jobs:
             docker pull redis:v7.0
             docker tag quay.io/argoproj/argocd:v3.3.8 $ECR:argocd-notifications-controller-v3.3.8
             docker push $ECR:argocd-notifications-controller-v3.3.8
-            docker pull redis:v7.0
-            docker tag redis:v7.0 $ECR:redis-v7.0
-            docker push $ECR:redis-v7.0
+            docker pull redis:7.0
+            docker tag redis:7.0 $ECR:redis-7.0
+            docker push $ECR:redis-7.0
       - name: Setup Helm
         uses: azure/setup-helm@v4
         with:
