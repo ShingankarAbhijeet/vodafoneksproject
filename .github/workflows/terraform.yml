@@ -92,18 +92,18 @@ jobs:
             docker pull quay.io/argoproj/argocd:v3.3.8
             docker tag quay.io/argoproj/argocd:v3.3.8 $ECR:argocd-v3.3.8
             docker push $ECR:argocd-v3.3.8
-            docker tag quay.io/argoproj/argocd:v3.3.8 $ECR:argocd-repo-server-3.3.8
-            docker push $ECR:argocd-repo-server-3.3.8
-            docker tag quay.io/argoproj/argocd:v3.3.8 $ECR:argocd-application-controller-3.3.8
-            docker push $ECR:argocd-application-controller-3.3.8
-            docker tag quay.io/argoproj/argocd:v3.3.8 $ECR:argocd-dex-server-3.3.8
-            docker push $ECR:argocd-dex-server-3.3.8
-            docker pull redis:7.0
-            docker tag quay.io/argoproj/argocd:v3.3.8 $ECR:argocd-notifications-controller-3.3.8
-            docker push $ECR:argocd-notifications-controller-3.3.8
-            docker pull redis:7.0
-            docker tag redis:7.0 $ECR:redis-7.0
-            docker push $ECR:redis-7.0
+            docker tag quay.io/argoproj/argocd:v3.3.8 $ECR:argocd-repo-server-v3.3.8
+            docker push $ECR:argocd-repo-server-v3.3.8
+            docker tag quay.io/argoproj/argocd:v3.3.8 $ECR:argocd-application-controller-v3.3.8
+            docker push $ECR:argocd-application-controller-v3.3.8
+            docker tag quay.io/argoproj/argocd:v3.3.8 $ECR:argocd-dex-server-v3.3.8
+            docker push $ECR:argocd-dex-server-v3.3.8
+            docker pull redis:v7.0
+            docker tag quay.io/argoproj/argocd:v3.3.8 $ECR:argocd-notifications-controller-v3.3.8
+            docker push $ECR:argocd-notifications-controller-v3.3.8
+            docker pull redis:v7.0
+            docker tag redis:v7.0 $ECR:redis-v7.0
+            docker push $ECR:redis-v7.0
       - name: Setup Helm
         uses: azure/setup-helm@v4
         with:

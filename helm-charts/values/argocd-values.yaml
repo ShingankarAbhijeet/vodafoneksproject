@@ -6,17 +6,17 @@ global:
 controller:
   image:
     repository: 314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/dev
-    tag: "3.3.8"
+    tag: "v3.3.8"
 
 repoServer:
   image:
     repository: 314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/dev
-    tag: "3.3.8"
+    tag: "v3.3.8"
 
 server:
   image:
     repository: 314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/dev
-    tag: "3.3.8"
+    tag: "v3.3.8"
 
 dex:
   image:
@@ -31,7 +31,7 @@ notifications:
 redis:
   image:
     repository: 314133462348.dkr.ecr.us-east-1.amazonaws.com/worldclassprodgrade/redis
-    tag: "7.0"
+    tag: "v7.0"
 
 server:
   service:
