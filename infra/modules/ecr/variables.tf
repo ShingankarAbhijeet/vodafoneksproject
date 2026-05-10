@@ -5,7 +5,7 @@ variable "subnet" {
 
 variable "env" {
   type = list(string)
-  default = ["dev", "qa", "staging", "prod"]  #"app-repo"]
+  default = ["dev", "prod", "addons"]  #"app-repo"]
   
 }
 variable "Project" {
