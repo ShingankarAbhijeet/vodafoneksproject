@@ -1,6 +1,7 @@
 
 resource "aws_ecr_repository" "infra-repo" {
   for_each = toset(var.env)
+  tags = var.tags
   name = "${var.Project}/${each.value}"
   image_tag_mutability = "IMMUTABLE"
   image_scanning_configuration {

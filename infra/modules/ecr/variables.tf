@@ -12,3 +12,9 @@ variable "Project" {
   type = string
   default = "worldclassprodgrade"
 }
+
+variable "tags" {
+  default = {
+    managed_by = "Terraform"
+  }
+}
