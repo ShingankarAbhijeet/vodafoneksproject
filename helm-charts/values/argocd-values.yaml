@@ -9,7 +9,7 @@ redis:
 
 server:
   service:
-    type: LoadBalancer
+    type: ClusterIP
 
   ingress:
     enabled: false   # keep simple for now (no ingress yet)
